@@ -1,0 +1,51 @@
+kind: vslices-materialization-template
+version: 0.1
+
+template:
+  id: markdown.question-tree
+  artifact-kind: document
+  media-type: text/markdown
+
+authority:
+  semantics: docs-standard
+  materialization: template-standard
+
+representation:
+  artifact:
+    identity:
+      source: front-matter
+
+  question:
+    presentation:
+      kind: heading
+      text:
+        source: question.text
+      level:
+        strategy: semantic-depth
+        root: 1
+
+    answer:
+      region:
+        starts: after-question-heading
+        ends: before-next-materialized-question-heading
+      empty: unanswered
+
+reconstruction:
+  question-identity:
+    root:
+      strategy: document-type-root-question
+    descendants:
+      strategy: unique-child-from-parent
+    ambiguous: reject
+
+  answer:
+    significant-content:
+      excludes:
+        - blank-lines
+
+constraints:
+  - heading-level is materialization, not semantic depth authority
+  - question-text is presentation, not durable question identity
+  - descendant identity must be structurally unique under the current question graph
+  - answer content must not introduce headings that collide with materialized question levels
+  - ambiguous reconstruction fails closed
