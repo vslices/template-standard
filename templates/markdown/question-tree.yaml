@@ -29,6 +29,8 @@ representation:
         starts: after-question-heading
         ends: before-next-materialized-question-heading
       empty: unanswered
+      multiple:
+        strategy: marked-instances
 
 reconstruction:
   question-identity:
@@ -43,9 +45,13 @@ reconstruction:
       excludes:
         - blank-lines
 
+  answer-instance:
+    strategy: explicit-marker
+
 constraints:
   - heading-level is materialization, not semantic depth authority
   - question-text is presentation, not durable question identity
   - descendant identity must be structurally unique under the current question graph
   - answer content must not introduce headings that collide with materialized question levels
+  - repeated answers use explicit materialization identity without defining semantic subject identity
   - ambiguous reconstruction fails closed
